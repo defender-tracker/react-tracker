@@ -1,0 +1,15 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-duccy-tracker-dev-190340-authRole",
+            "UnauthRoleArn": "arn:aws:iam::459430056467:role/amplify-duccy-tracker-dev-190340-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::459430056467:role/amplify-duccy-tracker-dev-190340-authRole",
+            "Region": "eu-west-2",
+            "DeploymentBucketName": "amplify-duccy-tracker-dev-190340-deployment",
+            "UnauthRoleName": "amplify-duccy-tracker-dev-190340-unauthRole",
+            "StackName": "amplify-duccy-tracker-dev-190340",
+            "StackId": "arn:aws:cloudformation:eu-west-2:459430056467:stack/amplify-duccy-tracker-dev-190340/8f5952d0-49dc-11ea-89b4-02c134fada26",
+            "AmplifyAppId": "d2zo2wlfz7h1gc"
+        }
+    }
+}

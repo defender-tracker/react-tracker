@@ -1,0 +1,15 @@
+projects:
+  TrackerPosition:
+    schemaPath: src/graphql/schema.json
+    includes:
+      - src/graphql/**/*.js
+    excludes:
+      - ./amplify/**
+    extensions:
+      amplify:
+        codeGenTarget: javascript
+        generatedFileName: ''
+        docsFilePath: src/graphql
+        region: eu-west-2
+        apiId: dbubtarjzzhtha4zfplitzb3ru
+        maxDepth: 2
