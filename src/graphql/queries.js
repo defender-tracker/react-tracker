@@ -17,6 +17,7 @@ export const getPositionUpdates = /* GraphQL */ `
         latitude
         longitude
         geohash
+        trip
       }
       nextToken
     }
@@ -44,6 +45,9 @@ export const listDeviceConfigurations = /* GraphQL */ `
       items {
         device_id
         name
+        connected
+        ip_address
+        current_trip
       }
       nextToken
     }

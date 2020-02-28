@@ -5,6 +5,7 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import Amplify from 'aws-amplify';
 
+import 'antd/dist/antd.css';
 
 import awsconfig from './aws-exports'; // if you are using Amplify CLI
 
@@ -14,7 +15,7 @@ Amplify.configure({
     Auth: {
         region: 'eu-west-2',
         userPoolId: 'eu-west-2_KHw7lGhc2',
-        userPoolWebClientId: '68vbkd8gvpc3voagiqo7d08uvr',
+        userPoolWebClientId: '68vbkd8gvpc3voagiqo7d08uvr'
     }
 });
 
