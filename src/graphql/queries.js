@@ -28,6 +28,26 @@ export const getDeviceConfiguration = /* GraphQL */ `
     getDeviceConfiguration(device_id: $device_id) {
       device_id
       name
+      connected
+      current_trip
+      last_update
+      ip_address
+    }
+  }
+`;
+export const getTrips = /* GraphQL */ `
+  query GetTrips(
+    $filter: TableDevicePositionUpdateFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    getTrips(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        trip_id
+        name
+        description
+      }
+      nextToken
     }
   }
 `;
@@ -46,8 +66,8 @@ export const listDeviceConfigurations = /* GraphQL */ `
         device_id
         name
         connected
-        ip_address
         current_trip
+        ip_address
       }
       nextToken
     }

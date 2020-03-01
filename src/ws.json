@@ -1,0 +1,68 @@
+{
+    "headers": {
+        "Host": "41jek15a6f.execute-api.eu-west-2.amazonaws.com",
+        "Sec-WebSocket-Extensions": "permessage-deflate; client_max_window_bits",
+        "Sec-WebSocket-Key": "tCsRr/rgTo+Xx3nyZ2jhRQ==",
+        "Sec-WebSocket-Version": "13",
+        "X-Amzn-Trace-Id": "Root=1-5e5bcd05-48e1c4d46cd4aa8c1643a1f0",
+        "X-Forwarded-For": "176.250.102.115",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https"
+    },
+    "multiValueHeaders": {
+        "Host": [
+            "41jek15a6f.execute-api.eu-west-2.amazonaws.com"
+        ],
+        "Sec-WebSocket-Extensions": [
+            "permessage-deflate; client_max_window_bits"
+        ],
+        "Sec-WebSocket-Key": [
+            "tCsRr/rgTo+Xx3nyZ2jhRQ=="
+        ],
+        "Sec-WebSocket-Version": [
+            "13"
+        ],
+        "X-Amzn-Trace-Id": [
+            "Root=1-5e5bcd05-48e1c4d46cd4aa8c1643a1f0"
+        ],
+        "X-Forwarded-For": [
+            "176.250.102.115"
+        ],
+        "X-Forwarded-Port": [
+            "443"
+        ],
+        "X-Forwarded-Proto": [
+            "https"
+        ]
+    },
+    "requestContext": {
+        "routeKey": "$connect",
+        "messageId": null,
+        "eventType": "CONNECT",
+        "extendedRequestId": "Itz40FBhLPEFrQw=",
+        "requestTime": "01/Mar/2020: 14: 56: 05 +0000",
+        "messageDirection": "IN",
+        "stage": "dev",
+        "connectedAt": 1583074565124,
+        "requestTimeEpoch": 1583074565125,
+        "identity": {
+            "cognitoIdentityPoolId": null,
+            "cognitoIdentityId": null,
+            "principalOrgId": null,
+            "cognitoAuthenticationType": null,
+            "userArn": null,
+            "userAgent": null,
+            "accountId": null,
+            "caller": null,
+            "sourceIp": "176.250.102.115",
+            "accessKey": null,
+            "cognitoAuthenticationProvider": null,
+            "user": null
+        },
+        "requestId": "Itz40FBhLPEFrQw=",
+        "domainName": "41jek15a6f.execute-api.eu-west-2.amazonaws.com",
+        "connectionId": "Itz40cfvrPECGPA=",
+        "apiId": "41jek15a6f"
+    },
+    "isBase64Encoded": false
+}

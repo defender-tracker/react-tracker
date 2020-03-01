@@ -6,6 +6,9 @@ export const onCreateDeviceConfiguration = /* GraphQL */ `
     onCreateDeviceConfiguration(device_id: $device_id) {
       device_id
       name
+      connected
+      current_trip
+      ip_address
     }
   }
 `;
@@ -14,6 +17,9 @@ export const onUpdateDeviceConfiguration = /* GraphQL */ `
     onUpdateDeviceConfiguration(device_id: $device_id) {
       device_id
       name
+      connected
+      current_trip
+      ip_address
     }
   }
 `;
@@ -22,6 +28,9 @@ export const onDeleteDeviceConfiguration = /* GraphQL */ `
     onDeleteDeviceConfiguration(device_id: $device_id) {
       device_id
       name
+      connected
+      current_trip
+      ip_address
     }
   }
 `;

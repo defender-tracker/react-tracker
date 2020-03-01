@@ -12,7 +12,6 @@ import {
 } from 'recharts';
 
 const SubMenu = Menu.SubMenu;
-const MenuItemGroup = Menu.ItemGroup;
 
 const Map = ReactMapboxGl({
   accessToken:
@@ -38,9 +37,11 @@ const lineStyle = {
   'circle-stroke-opacity': 1
 }
 
+/*
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
 }
+*/
 
 class App extends React.Component {
 
@@ -57,6 +58,7 @@ class App extends React.Component {
     };
     this.setData = this.setData.bind(this);
     this.setDevices = this.setDevices.bind(this);
+    this.setTrips = this.setTrips.bind(this);
   }
 
   showDrawer = () => {
@@ -71,16 +73,15 @@ class App extends React.Component {
     });
   };
 
-  async getData() {
-    return await API.graphql(graphqlOperation(queries.getPositionUpdates));
-  }
-  async getDevices() {
-    return await API.graphql(graphqlOperation(queries.listDeviceConfigurations));
-  }
-  
-  setDevices(_data) {
-    const devices = _data.data.listDeviceConfigurations.items;
-    this.setState({ devices: devices });
+  async getData(_trip_id) {
+    return await API.graphql(
+      graphqlOperation(
+        queries.getPositionUpdates,
+        {
+          trip_id: _trip_id
+        }
+      )
+    );
   }
 
   setData(_data) {
@@ -97,14 +98,33 @@ class App extends React.Component {
             Math.max.apply(Math, points.map(function (o) { return o.latitude; })) + 0.5,
             Math.max.apply(Math, points.map(function (o) { return o.longitude; })) + 0.5
           ]
-        ],
-        trips: points.map(function (o) { return o.trip; }).filter(onlyUnique)
+        ]//,
+        //trips: points.map(function (o) { return o.trip; }).filter(onlyUnique)
       }
     );
   }
 
+  async getDevices() {
+    return await API.graphql(graphqlOperation(queries.listDeviceConfigurations));
+  }
+
+  setDevices(_data) {
+    const devices = _data.data.listDeviceConfigurations.items;
+    this.setState({ devices: devices });
+  }
+
+  async getTrips() {
+    return await API.graphql(graphqlOperation(queries.getTrips));
+  }
+  
+  setTrips(_data) {
+    const trips = _data.data.getTrips.items;
+    this.setState({ trips: trips });
+  }
+
   componentDidMount() {
     this.getDevices().then(this.setDevices);
+    this.getTrips().then(this.setTrips);
     this.getData().then(this.setData);
   }
 
@@ -131,6 +151,9 @@ class App extends React.Component {
   toggleTrip = (event) => {
     var _filters = this.state.filters;
     if (event.target.checked) {
+
+      this.getData(event.target.uuid);
+
       _filters.trips.push(event.target.uuid);
       this.setState({ filters: _filters });
     } else if (!event.target.checked) {
@@ -150,13 +173,17 @@ class App extends React.Component {
     );
 
     const devices = this.state.devices.map((device, index) => {
-      var icon = (<Icon type="close-circle" style={{ float: 'right', color: "#ff000f" }} />);
+      var icon = (<Icon type="close-square" style={{ marginTop: '0.8rem', float: 'right', color: "#d65429" }} />);
       if (device.connected) {
-        icon = (<Icon type="check-circle" style={{ float: 'right', color: "#00ff0f" }} />);
+        icon = (<Icon type="check-square" style={{ marginTop: '0.8rem', float: 'right', color: "#5adb5a" }} />);
       }
       return (
         <Menu.Item key={device.device_id}>
-          <Checkbox onChange={null}>{device.name}</Checkbox>
+          <Checkbox onChange={null}>
+            {device.name}
+            <br/>
+          <small>Something</small>
+          </Checkbox>
           {icon}
         </Menu.Item>
       )
@@ -168,15 +195,15 @@ class App extends React.Component {
 
     const trips = this.state.trips.map((item, index) => {
       var element = (
-        <Checkbox onChange={this.toggleTrip} uuid={item}>{ item.name }</Checkbox>
+        <Checkbox onChange={this.toggleTrip} uuid={item.trip_id}>{ item.name }</Checkbox>
       )
       if (!item.name) {
         element = (
-          <Checkbox onChange={this.toggleTrip} uuid={item} style={{color: "#d2d2d2"}}>Unnamed Trip</Checkbox>
+          <Checkbox onChange={this.toggleTrip} uuid={item.trip_id} style={{color: "#d2d2d2"}}>Unnamed Trip</Checkbox>
         )
       }
       return (
-        <Menu.Item key={item}>
+        <Menu.Item key={item.trip_id}>
           {element}
         </Menu.Item>
       )
@@ -243,9 +270,7 @@ class App extends React.Component {
                 </span>
               }
             >
-              <MenuItemGroup key="g1" title="Trackers">
-                {devices}
-              </MenuItemGroup>
+              {devices}
             </SubMenu>
             
 
