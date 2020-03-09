@@ -15,7 +15,15 @@ Amplify.configure({
     Auth: {
         region: 'eu-west-2',
         userPoolId: 'eu-west-2_KHw7lGhc2',
-        userPoolWebClientId: '68vbkd8gvpc3voagiqo7d08uvr'
+        userPoolWebClientId: '38hoqsae3aijqpq747hbjf13o9'
+    },
+    API: {
+        endpoints: [
+            {
+                name: "duccy-rest",
+                endpoint: "https://9dqcy92uy2.execute-api.eu-west-2.amazonaws.com/prod"
+            }
+        ]
     }
 });
 

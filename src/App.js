@@ -3,8 +3,7 @@ import { Icon, Menu, Drawer, Button, Checkbox } from 'antd';
 import './App.css';
 import { withAuthenticator } from 'aws-amplify-react'; // or 'aws-amplify-react-native';
 
-import { API, graphqlOperation } from 'aws-amplify';
-import * as queries from './graphql/queries';
+import { API, Auth } from 'aws-amplify';
 
 import ReactMapboxGl, { Layer, Feature } from 'react-mapbox-gl';
 import {
@@ -73,19 +72,64 @@ class App extends React.Component {
     });
   };
 
-  async getData(_trip_id) {
-    return await API.graphql(
-      graphqlOperation(
-        queries.getPositionUpdates,
-        {
-          trip_id: _trip_id
+
+    /*
+    var path = '/positions';
+
+    if (tripId) {
+      path = path + "?trip_id=" + tripId
+    }
+
+    if (deviceId) {
+      path = path + "device_id=" + deviceId
+    }
+
+    console.log(path);
+    */
+
+  async getPositions(tripId = null, deviceId = null) {
+    var path = '/positions'
+
+    if (tripId) {
+      path = path + '?trip_id=' + tripId;
+    }
+    return await API.get(
+      'duccy-rest',
+      path,
+      {
+        headers: {
+          Authorization: `Bearer ${(await Auth.currentSession()).getAccessToken().getJwtToken()}`
         }
-      )
+      }
+    );
+  }
+
+  async getTrips() { 
+    return await API.get(
+      'duccy-rest',
+      '/trips',
+      { 
+        headers: {
+          Authorization: `Bearer ${(await Auth.currentSession()).getAccessToken().getJwtToken()}`
+        }
+      }
+    );
+  }
+
+  async getDevices() {
+    return await API.get(
+      'duccy-rest',
+      '/devices',
+      { 
+        headers: {
+          Authorization: `Bearer ${(await Auth.currentSession()).getAccessToken().getJwtToken()}`
+        }
+      }
     );
   }
 
   setData(_data) {
-    const points = _data.data.getPositionUpdates.items
+    const points = _data.positions;
     this.setState(
       {
         data: points,
@@ -104,35 +148,27 @@ class App extends React.Component {
     );
   }
 
-  async getDevices() {
-    return await API.graphql(graphqlOperation(queries.listDeviceConfigurations));
-  }
-
   setDevices(_data) {
-    const devices = _data.data.listDeviceConfigurations.items;
+    const devices = _data.devices;
     this.setState({ devices: devices });
   }
 
-  async getTrips() {
-    return await API.graphql(graphqlOperation(queries.getTrips));
-  }
   
   setTrips(_data) {
-    const trips = _data.data.getTrips.items;
+    const trips = _data.trips;
     this.setState({ trips: trips });
   }
 
   componentDidMount() {
     this.getDevices().then(this.setDevices);
     this.getTrips().then(this.setTrips);
-    this.getData().then(this.setData);
   }
 
   applyFilters = (filters, point) => {
     //if (filters.trips.length === 0) {
     //  return true
     //} else {
-    return (filters.trips.indexOf(point.trip) > -1);
+    return (filters.trips.indexOf(point.trip_id) > -1);
     //}
   }
 
@@ -152,7 +188,7 @@ class App extends React.Component {
     var _filters = this.state.filters;
     if (event.target.checked) {
 
-      this.getData(event.target.uuid);
+      this.getPositions(event.target.uuid).then(this.setData);
 
       _filters.trips.push(event.target.uuid);
       this.setState({ filters: _filters });
@@ -164,7 +200,7 @@ class App extends React.Component {
   }
 
   render() {
-
+    
     const filteredPoints = this.state.data.filter(
       this.applyFilters.bind(
         this,
@@ -235,7 +271,7 @@ class App extends React.Component {
     return (
       <>
         <Drawer
-          title="Basic Drawer"
+          title="Duccy Tracker"
           placement="right"
           closable={false}
           onClose={this.onClose}
@@ -292,7 +328,7 @@ class App extends React.Component {
         </Button>
         <Map
           // eslint-disable-next-line
-          style={"mapbox://styles/danjbrewer/ck6qgwk2e4vg61ipjyrscx4bk"}
+          style={"mapbox://styles/danjbrewer/ck7k8vi8r7ob71irwee1jm6nv"}
           containerStyle={{
             height: '100%',
             width: '100%'
