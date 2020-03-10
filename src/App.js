@@ -3,7 +3,13 @@ import { Icon, Menu, Drawer, Button, Checkbox } from 'antd';
 import './App.css';
 import { withAuthenticator } from 'aws-amplify-react'; // or 'aws-amplify-react-native';
 
-import { API, Auth } from 'aws-amplify';
+import {
+  //getPositions,
+  getTrips,
+  getDevices,
+  getTripPositions,
+  //getDevicePositions
+} from './restApi';
 
 import ReactMapboxGl, { Layer, Feature } from 'react-mapbox-gl';
 import {
@@ -36,11 +42,9 @@ const lineStyle = {
   'circle-stroke-opacity': 1
 }
 
-/*
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
 }
-*/
 
 class App extends React.Component {
 
@@ -52,6 +56,7 @@ class App extends React.Component {
       filters: {
         trips: []
       },
+      cached_trips: [],
       trips: [],
       visible: false
     };
@@ -72,64 +77,10 @@ class App extends React.Component {
     });
   };
 
-
-    /*
-    var path = '/positions';
-
-    if (tripId) {
-      path = path + "?trip_id=" + tripId
-    }
-
-    if (deviceId) {
-      path = path + "device_id=" + deviceId
-    }
-
-    console.log(path);
-    */
-
-  async getPositions(tripId = null, deviceId = null) {
-    var path = '/positions'
-
-    if (tripId) {
-      path = path + '?trip_id=' + tripId;
-    }
-    return await API.get(
-      'duccy-rest',
-      path,
-      {
-        headers: {
-          Authorization: `Bearer ${(await Auth.currentSession()).getAccessToken().getJwtToken()}`
-        }
-      }
-    );
-  }
-
-  async getTrips() { 
-    return await API.get(
-      'duccy-rest',
-      '/trips',
-      { 
-        headers: {
-          Authorization: `Bearer ${(await Auth.currentSession()).getAccessToken().getJwtToken()}`
-        }
-      }
-    );
-  }
-
-  async getDevices() {
-    return await API.get(
-      'duccy-rest',
-      '/devices',
-      { 
-        headers: {
-          Authorization: `Bearer ${(await Auth.currentSession()).getAccessToken().getJwtToken()}`
-        }
-      }
-    );
-  }
+  
 
   setData(_data) {
-    const points = _data.positions;
+    const points = this.state.data.concat(_data);
     this.setState(
       {
         data: points,
@@ -142,33 +93,30 @@ class App extends React.Component {
             Math.max.apply(Math, points.map(function (o) { return o.latitude; })) + 0.5,
             Math.max.apply(Math, points.map(function (o) { return o.longitude; })) + 0.5
           ]
-        ]//,
-        //trips: points.map(function (o) { return o.trip; }).filter(onlyUnique)
+        ],
+        cached_trips: points.map(function (o) { return o.tripId; }).filter(onlyUnique)
       }
     );
   }
 
   setDevices(_data) {
-    const devices = _data.devices;
-    this.setState({ devices: devices });
+    this.setState({ devices: _data });
   }
 
-  
   setTrips(_data) {
-    const trips = _data.trips;
-    this.setState({ trips: trips });
+    this.setState({ trips: _data });
   }
 
   componentDidMount() {
-    this.getDevices().then(this.setDevices);
-    this.getTrips().then(this.setTrips);
+    getDevices().then(this.setDevices);
+    getTrips().then(this.setTrips);
   }
 
   applyFilters = (filters, point) => {
     //if (filters.trips.length === 0) {
     //  return true
     //} else {
-    return (filters.trips.indexOf(point.trip_id) > -1);
+    return (filters.trips.indexOf(point.tripId) > -1);
     //}
   }
 
@@ -188,7 +136,9 @@ class App extends React.Component {
     var _filters = this.state.filters;
     if (event.target.checked) {
 
-      this.getPositions(event.target.uuid).then(this.setData);
+      if (this.state.cached_trips.indexOf(event.target.uuid) < 0){
+        getTripPositions(event.target.uuid).then(this.setData);
+      }
 
       _filters.trips.push(event.target.uuid);
       this.setState({ filters: _filters });
@@ -200,7 +150,7 @@ class App extends React.Component {
   }
 
   render() {
-    
+
     const filteredPoints = this.state.data.filter(
       this.applyFilters.bind(
         this,
@@ -217,8 +167,8 @@ class App extends React.Component {
         <Menu.Item key={device.device_id}>
           <Checkbox onChange={null}>
             {device.name}
-            <br/>
-          <small>Something</small>
+            <br />
+            <small>Something</small>
           </Checkbox>
           {icon}
         </Menu.Item>
@@ -231,15 +181,15 @@ class App extends React.Component {
 
     const trips = this.state.trips.map((item, index) => {
       var element = (
-        <Checkbox onChange={this.toggleTrip} uuid={item.trip_id}>{ item.name }</Checkbox>
+        <Checkbox onChange={this.toggleTrip} uuid={item.tripId}>{item.name}</Checkbox>
       )
       if (!item.name) {
         element = (
-          <Checkbox onChange={this.toggleTrip} uuid={item.trip_id} style={{color: "#d2d2d2"}}>Unnamed Trip</Checkbox>
+          <Checkbox onChange={this.toggleTrip} uuid={item.tripId} style={{ color: "#d2d2d2" }}>Unnamed Trip</Checkbox>
         )
       }
       return (
-        <Menu.Item key={item.trip_id}>
+        <Menu.Item key={item.tripId}>
           {element}
         </Menu.Item>
       )
@@ -287,15 +237,15 @@ class App extends React.Component {
             <SubMenu
               key="trips"
               title={
-              <span>
-                <Icon type="environment" />
-                <span>Trips</span>
-              </span>
+                <span>
+                  <Icon type="environment" />
+                  <span>Trips</span>
+                </span>
               }
             >
               {trips}
             </SubMenu>
-            
+
 
             <SubMenu
               key="devices"
@@ -308,7 +258,7 @@ class App extends React.Component {
             >
               {devices}
             </SubMenu>
-            
+
 
             <SubMenu
               key="settings"
