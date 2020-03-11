@@ -21,7 +21,7 @@ Amplify.configure({
         endpoints: [
             {
                 name: "duccy-rest",
-                endpoint: "https://9dqcy92uy2.execute-api.eu-west-2.amazonaws.com/prod"
+                endpoint: "https://9dqcy92uy2.execute-api.eu-west-2.amazonaws.com/dev"
             }
         ]
     }

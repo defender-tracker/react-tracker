@@ -158,13 +158,15 @@ class App extends React.Component {
       )
     );
 
+    console.log(filteredPoints);
+    
     const devices = this.state.devices.map((device, index) => {
       var icon = (<Icon type="close-square" style={{ marginTop: '0.8rem', float: 'right', color: "#d65429" }} />);
       if (device.connected) {
         icon = (<Icon type="check-square" style={{ marginTop: '0.8rem', float: 'right', color: "#5adb5a" }} />);
       }
       return (
-        <Menu.Item key={device.device_id}>
+        <Menu.Item key={device.deviceId}>
           <Checkbox onChange={null}>
             {device.name}
             <br />
@@ -176,7 +178,7 @@ class App extends React.Component {
     });
 
     const features = filteredPoints.map((item, index) => {
-      return (<Feature coordinates={[item.latitude, item.longitude]} />)
+      return (<Feature key={item.deviceId + item.timestamp} coordinates={[item.latitude, item.longitude]} />)
     });
 
     const trips = this.state.trips.map((item, index) => {

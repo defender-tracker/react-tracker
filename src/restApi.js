@@ -38,7 +38,7 @@ async function getData(path, params) {
         _params.lastKey = _data.lastKey;
         _full_data = _full_data.concat(_data.items);
 
-        while (_params.lastKey !== "") {
+        while (_params.lastKey) {
 
             const _data = await callAPI(path, _params);
 
