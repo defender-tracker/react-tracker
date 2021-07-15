@@ -34,12 +34,9 @@ const circleStyle = {
 
 // eslint-disable-next-line
 const lineStyle = {
-  'circle-radius': 3,
-  'circle-color': '#aa0000',
-  'circle-opacity': 0.8,
-  'circle-stroke-color': '#cc0000',
-  'circle-stroke-width': 2,
-  'circle-stroke-opacity': 1
+  'line-color': '#aa0000',
+  'line-opacity': 0.8,
+  'line-width': 2
 }
 
 function onlyUnique(value, index, self) {
@@ -157,8 +154,6 @@ class App extends React.Component {
         this.state.filters
       )
     );
-
-    console.log(filteredPoints);
     
     const devices = this.state.devices.map((device, index) => {
       var icon = (<Icon type="close-square" style={{ marginTop: '0.8rem', float: 'right', color: "#d65429" }} />);
@@ -178,7 +173,14 @@ class App extends React.Component {
     });
 
     const features = filteredPoints.map((item, index) => {
-      return (<Feature key={item.deviceId + item.timestamp} coordinates={[item.latitude, item.longitude]} />)
+      if (index < filteredPoints.length - 2) {
+      return (
+        <Layer type="line" key={index} paint={lineStyle}>
+          <Feature key={item.deviceId + item.timestamp} coordinates={[item.latitude, item.longitude]} />
+          <Feature key={item.deviceId + filteredPoints[index+1].timestamp} coordinates={[filteredPoints[index+1].latitude, filteredPoints[index+1].longitude]} />
+        </Layer>
+      )
+      }
     });
 
     const trips = this.state.trips.map((item, index) => {
@@ -199,12 +201,12 @@ class App extends React.Component {
 
     var boundingBox = [
       [
-        -10.8544921875,
-        49.82380908513249
+        -168.046875,
+        -21.943046
       ],
       [
-        2.021484375,
-        59.478568831926395
+        191.601563,
+        75.672197
       ]
     ]
     if (filteredPoints.length > 0) {
@@ -219,6 +221,8 @@ class App extends React.Component {
         ]
       ]
     }
+
+    console.log(features);
 
     return (
       <>
@@ -288,9 +292,17 @@ class App extends React.Component {
           fitBounds={boundingBox}
 
         >
-          <Layer type="circle" id="marker" paint={circleStyle} >
-            {features}
-          </Layer>
+
+          {
+            (filteredPoints.length > 100) && (
+              <Layer type="line" key="avdbnd" paint={lineStyle}>
+                <Feature key={filteredPoints[0].deviceId + filteredPoints[0].timestamp} coordinates={[filteredPoints[0].latitude, filteredPoints[0].longitude]} />
+                <Feature key={filteredPoints[100].deviceId + filteredPoints[100].timestamp} coordinates={[filteredPoints[100].latitude, filteredPoints[100].longitude]} />
+              </Layer>
+            )
+          }
+          
+          {features}
         </Map>
       </>
     );
